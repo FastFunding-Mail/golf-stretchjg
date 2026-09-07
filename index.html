@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Golf Stretch">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1F3A2C">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='38' fill='%231F3A2C'/%3E%3Crect x='84' y='40' width='6' height='90' fill='%23EFE6CE'/%3E%3Cpath d='M90 40 L134 56 L90 72 Z' fill='%23A63B2E'/%3E%3Ccircle cx='87' cy='142' r='11' fill='%23EFE6CE'/%3E%3C/svg%3E">
+<title>Golf Stretch</title>
+<style>
+  :root {
+    --fairway: #1F3A2C;
+    --fairway-light: #2F5541;
+    --sand: #EFE6CE;
+    --sand-dark: #D9C89C;
+    --ink: #1B1B16;
+    --flag: #A63B2E;
+    --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--sand);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .hero {
+    background: var(--fairway);
+    color: var(--sand);
+    padding: 28px 20px 22px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    right: -30px;
+    top: -30px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: repeating-radial-gradient(circle, rgba(239,230,206,0.06) 0px, rgba(239,230,206,0.06) 2px, transparent 2px, transparent 8px);
+  }
+  .hero h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-size: 28px;
+    line-height: 1.15;
+    margin: 0 0 6px;
+    max-width: 260px;
+  }
+  .hero p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--sand-dark);
+    max-width: 280px;
+  }
+  .tabs {
+    display: flex;
+    background: var(--fairway-light);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 12px 2px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--sand-dark);
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    user-select: none;
+  }
+  .tab.active {
+    color: var(--white);
+    border-bottom-color: var(--flag);
+  }
+  .day-label {
+    font-size: 11px;
+    display: block;
+    font-weight: 400;
+    opacity: 0.75;
+    margin-top: 2px;
+  }
+  main {
+    padding: 18px 16px 60px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .session-title {
+    font-family: Georgia, serif;
+    font-size: 20px;
+    margin: 4px 0 2px;
+  }
+  .session-sub {
+    font-size: 13px;
+    color: #5A5A4E;
+    margin: 0 0 16px;
+  }
+  .progress-track {
+    height: 6px;
+    background: var(--sand-dark);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 18px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--flag);
+    width: 0%;
+    transition: width 0.25s ease;
+  }
+  .section-head {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--fairway);
+    letter-spacing: 0.3px;
+    margin: 18px 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--sand-dark);
+  }
+  .section-head:first-of-type { margin-top: 0; }
+  .card {
+    background: var(--white);
+    border: 1px solid var(--sand-dark);
+    border-radius: 10px;
+    padding: 14px 14px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .card.done {
+    opacity: 0.55;
+  }
+  .check {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--fairway);
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .check.checked {
+    background: var(--fairway);
+  }
+  .check.checked::after {
+    content: "✓";
+    color: var(--white);
+    font-size: 13px;
+    font-weight: bold;
+  }
+  .card-body { flex: 1; min-width: 0; }
+  .ex-name {
+    font-weight: 600;
+    font-size: 15.5px;
+    margin: 0 0 2px;
+  }
+  .ex-name.done { text-decoration: line-through; }
+  .ex-detail {
+    font-size: 13px;
+    color: #5A5A4E;
+    margin: 0 0 8px;
+  }
+  .watch-btn {
+    display: inline-block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--fairway);
+    text-decoration: none;
+    border: 1px solid var(--fairway);
+    border-radius: 20px;
+    padding: 5px 12px;
+  }
+  .watch-btn:active { background: var(--sand); }
+  .note {
+    margin-top: 22px;
+    padding: 14px;
+    background: var(--fairway);
+    color: var(--sand);
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .note strong { color: var(--white); }
+  .reset-row {
+    text-align: center;
+    margin-top: 16px;
+  }
+  .reset-row button {
+    background: none;
+    border: none;
+    color: #8A8A7A;
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Golf Stretch</h1>
+  <p>Daily mobility, four strength sessions, and an after-golf stretch on Wednesday.</p>
+</div>
+
+<div class="tabs" id="tabs"></div>
+
+<main>
+  <div id="content"></div>
+</main>
+
+<script>
+const YT = q => "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
+
+const plan = {
+  mobility: {
+    label: "Daily",
+    dayLabel: "Every day",
+    title: "Daily Mobility",
+    sub: "8 minutes, every day including rest days.",
+    exercises: [
+      { id: "m1", name: "Couch stretch", detail: "45 sec each side x2", video: "https://www.youtube.com/watch?v=-rsIS-wl-ig" },
+      { id: "m2", name: "90/90 hip switches", detail: "8 each side", video: YT("90 90 hip switch stretch tutorial") },
+      { id: "m3", name: "Cat-cow", detail: "10 reps", video: YT("cat cow stretch tutorial") },
+      { id: "m4", name: "Glute bridge hold", detail: "30 sec x2", video: "https://www.youtube.com/watch?v=n6JiF2jp2Ns" },
+      { id: "m5", name: "World's greatest stretch", detail: "5 each side", video: YT("worlds greatest stretch tutorial") }
+    ]
+  },
+  mon: {
+    label: "Mon",
+    dayLabel: "Day 1",
+    title: "Lower Body Strength",
+    sub: "~45 minutes. Stretch, lift, stretch.",
+    exercises: [
+      { id: "mo1", name: "Couch stretch", detail: "45 sec each side", section: "Warm-up", video: "https://www.youtube.com/watch?v=-rsIS-wl-ig" },
+      { id: "mo2", name: "90/90 hip switches", detail: "8 each side", section: "Warm-up", video: YT("90 90 hip switch stretch tutorial") },
+      { id: "mo3", name: "Goblet squat", detail: "3 x 10, pain-free depth", section: "Strength", video: YT("goblet squat tutorial") },
+      { id: "mo4", name: "Romanian deadlift (dumbbells)", detail: "3 x 10", section: "Strength", video: YT("dumbbell romanian deadlift tutorial") },
+      { id: "mo5", name: "Step-ups (low box)", detail: "3 x 8 each side", section: "Strength", video: YT("step up exercise tutorial") },
+      { id: "mo6", name: "Lateral band walks", detail: "3 x 10 each side", section: "Strength", video: YT("lateral band walk tutorial") },
+      { id: "mo7", name: "Calf raises", detail: "3 x 15", section: "Strength", video: YT("calf raise exercise tutorial") },
+      { id: "mo8", name: "Pigeon stretch / figure-4", detail: "45 sec each side", section: "Cool-down", video: YT("pigeon stretch tutorial") }
+    ]
+  },
+  tue: {
+    label: "Tue",
+    dayLabel: "Day 2",
+    title: "Upper Body + Core",
+    sub: "~40 minutes. Stretch, lift, stretch.",
+    exercises: [
+      { id: "tu1", name: "Cat-cow", detail: "10 reps", section: "Warm-up", video: YT("cat cow stretch tutorial") },
+      { id: "tu2", name: "World's greatest stretch", detail: "5 each side", section: "Warm-up", video: YT("worlds greatest stretch tutorial") },
+      { id: "tu3", name: "Push-ups", detail: "3 x 10", section: "Strength", video: YT("push up tutorial correct form") },
+      { id: "tu4", name: "Single-arm dumbbell row", detail: "3 x 10 each side", section: "Strength", video: YT("single arm dumbbell row tutorial") },
+      { id: "tu5", name: "Standing dumbbell shoulder press", detail: "3 x 10", section: "Strength", video: YT("standing dumbbell shoulder press tutorial") },
+      { id: "tu6", name: "Dead bug", detail: "3 x 10 each side", section: "Strength", video: YT("dead bug exercise tutorial") },
+      { id: "tu7", name: "Plank", detail: "3 x 30-45 sec", section: "Strength", video: YT("plank exercise tutorial") },
+      { id: "tu8", name: "Standing hip flexor stretch", detail: "45 sec each side", section: "Cool-down", video: YT("standing hip flexor stretch tutorial") }
+    ]
+  },
+  wed: {
+    label: "Wed",
+    dayLabel: "After Golf",
+    title: "Post-Round Stretch",
+    sub: "10-12 minutes. No strength today — just unwind the round.",
+    exercises: [
+      { id: "we1", name: "Couch stretch", detail: "45 sec each side", video: "https://www.youtube.com/watch?v=-rsIS-wl-ig" },
+      { id: "we2", name: "Standing hip flexor stretch", detail: "45 sec each side", video: YT("standing hip flexor stretch tutorial") },
+      { id: "we3", name: "Pigeon stretch / figure-4", detail: "45 sec each side", video: YT("pigeon stretch tutorial") },
+      { id: "we4", name: "Hamstring stretch", detail: "45 sec each side", video: YT("standing hamstring stretch tutorial") },
+      { id: "we5", name: "Seated thoracic spine rotation", detail: "8 each side", video: YT("seated thoracic spine rotation stretch tutorial") },
+      { id: "we6", name: "Cat-cow", detail: "10 reps", video: YT("cat cow stretch tutorial") },
+      { id: "we7", name: "Foam roll: quads, glutes, lower back", detail: "5 minutes", video: YT("foam rolling quads glutes lower back tutorial") }
+    ]
+  },
+  thu: {
+    label: "Thu",
+    dayLabel: "Day 3",
+    title: "Posterior Chain Strength",
+    sub: "~45 minutes. Stretch, lift, stretch.",
+    exercises: [
+      { id: "th1", name: "Glute bridge hold", detail: "30 sec x2", section: "Warm-up", video: "https://www.youtube.com/watch?v=n6JiF2jp2Ns" },
+      { id: "th2", name: "Half-kneeling hip flexor stretch", detail: "45 sec each side", section: "Warm-up", video: YT("half kneeling hip flexor stretch tutorial") },
+      { id: "th3", name: "Glute bridges", detail: "3 x 12", section: "Strength", video: "https://www.youtube.com/watch?v=n6JiF2jp2Ns" },
+      { id: "th4", name: "Bird dog", detail: "3 x 10 each side", section: "Strength", video: "https://www.youtube.com/watch?v=KA0ekfSePrQ" },
+      { id: "th5", name: "Single-leg RDL", detail: "3 x 8 each side", section: "Strength", video: YT("single leg romanian deadlift tutorial") },
+      { id: "th6", name: "Side-lying clamshells (band)", detail: "3 x 15 each side", section: "Strength", video: YT("clamshell exercise with band tutorial") },
+      { id: "th7", name: "Suitcase carry", detail: "3 x 20m each side", section: "Strength", video: YT("suitcase carry exercise tutorial") },
+      { id: "th8", name: "Child's pose", detail: "60 sec", section: "Cool-down", video: YT("childs pose stretch lower back tutorial") }
+    ]
+  },
+  fri: {
+    label: "Fri",
+    dayLabel: "Day 4",
+    title: "Full Body + Rotation",
+    sub: "~45 minutes. Stretch, lift, stretch.",
+    exercises: [
+      { id: "fr1", name: "90/90 hip switches", detail: "8 each side", section: "Warm-up", video: YT("90 90 hip switch stretch tutorial") },
+      { id: "fr2", name: "World's greatest stretch", detail: "5 each side", section: "Warm-up", video: YT("worlds greatest stretch tutorial") },
+      { id: "fr3", name: "Wood chops (band or cable)", detail: "3 x 10 each side", section: "Strength", video: YT("wood chop exercise tutorial") },
+      { id: "fr4", name: "Med ball rotational throw", detail: "3 x 8 each side", section: "Strength", video: YT("medicine ball rotational throw tutorial") },
+      { id: "fr5", name: "Kettlebell swings", detail: "3 x 12", section: "Strength", video: YT("kettlebell swing tutorial") },
+      { id: "fr6", name: "Farmer's carry", detail: "3 x 20m", section: "Strength", video: YT("farmers carry exercise tutorial") },
+      { id: "fr7", name: "Plank", detail: "3 x 30-45 sec", section: "Strength", video: YT("plank exercise tutorial") },
+      { id: "fr8", name: "Couch stretch", detail: "45 sec each side", section: "Cool-down", video: "https://www.youtube.com/watch?v=-rsIS-wl-ig" }
+    ]
+  }
+};
+
+const notes = {
+  mobility: "Hip flexor tightness is often what's dragging on the lower back. Never skip the couch stretch.",
+  mon: "If the knee flares on squats or step-ups, cut the range of motion before cutting the exercise.",
+  tue: "Keep the core braced through the pressing and rowing work — that's what protects the lower back.",
+  wed: "No strength work today. This is just to stop the round tightening you up before tomorrow's session.",
+  thu: "Activate the glutes in the warm-up before anything else — it takes load off the back for the whole session.",
+  fri: "Warm up properly before the rotational work — that's where the back gets tested most."
+};
+
+let activeDay = "mobility";
+let checked = {};
+
+async function loadChecked(dayKey) {
+  try {
+    const res = await window.storage.get("checked:" + dayKey, false);
+    checked = res ? JSON.parse(res.value) : {};
+  } catch (e) {
+    checked = {};
+  }
+}
+
+async function saveChecked(dayKey) {
+  try {
+    await window.storage.set("checked:" + dayKey, JSON.stringify(checked), false);
+  } catch (e) {}
+}
+
+function renderTabs() {
+  const tabsEl = document.getElementById("tabs");
+  tabsEl.innerHTML = "";
+  Object.keys(plan).forEach(key => {
+    const t = document.createElement("div");
+    t.className = "tab" + (key === activeDay ? " active" : "");
+    t.innerHTML = plan[key].label;
+    t.onclick = () => switchDay(key);
+    tabsEl.appendChild(t);
+  });
+}
+
+async function switchDay(key) {
+  activeDay = key;
+  await loadChecked(key);
+  renderTabs();
+  renderContent();
+}
+
+function renderContent() {
+  const day = plan[activeDay];
+  const contentEl = document.getElementById("content");
+  const doneCount = day.exercises.filter(ex => checked[ex.id]).length;
+  const pct = Math.round((doneCount / day.exercises.length) * 100);
+
+  let html = '';
+  html += '<h2 class="session-title">' + day.title + '</h2>';
+  html += '<p class="session-sub">' + day.dayLabel + ' — ' + day.sub + '</p>';
+  html += '<div class="progress-track"><div class="progress-fill" style="width:' + pct + '%"></div></div>';
+
+  let lastSection = null;
+  day.exercises.forEach(ex => {
+    if (ex.section && ex.section !== lastSection) {
+      html += '<div class="section-head">' + ex.section + '</div>';
+      lastSection = ex.section;
+    }
+    const isDone = !!checked[ex.id];
+    html += '<div class="card ' + (isDone ? 'done' : '') + '" data-id="' + ex.id + '">';
+    html += '  <div class="check ' + (isDone ? 'checked' : '') + '" data-id="' + ex.id + '"></div>';
+    html += '  <div class="card-body">';
+    html += '    <p class="ex-name ' + (isDone ? 'done' : '') + '">' + ex.name + '</p>';
+    html += '    <p class="ex-detail">' + ex.detail + '</p>';
+    html += '    <a class="watch-btn" href="' + ex.video + '" target="_blank" rel="noopener">Watch demo</a>';
+    html += '  </div>';
+    html += '</div>';
+  });
+
+  html += '<div class="note"><strong>Note.</strong> ' + notes[activeDay] + '</div>';
+  html += '<div class="reset-row"><button id="resetBtn">Reset today\'s ticks</button></div>';
+
+  contentEl.innerHTML = html;
+
+  contentEl.querySelectorAll(".check").forEach(el => {
+    el.addEventListener("click", async () => {
+      const id = el.getAttribute("data-id");
+      checked[id] = !checked[id];
+      await saveChecked(activeDay);
+      renderContent();
+    });
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", async () => {
+    checked = {};
+    await saveChecked(activeDay);
+    renderContent();
+  });
+}
+
+(async function init() {
+  renderTabs();
+  await loadChecked(activeDay);
+  renderContent();
+})();
+</script>
+
+</body>
+</html>
